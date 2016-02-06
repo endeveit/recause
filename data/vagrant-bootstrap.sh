@@ -33,8 +33,8 @@ while ! grep -m1 'indices into cluster_state' < /var/log/elasticsearch/elasticse
 done
 
 # Setup analyzers and mapping
-curl -XPUT 'http://localhost:9200/recause/?pretty'
-curl -XPOST 'http://localhost:9200/recause/_close?pretty'
+curl -XPUT 'http://localhost:9200/recause/?pretty' && sleep 2
+curl -XPOST 'http://localhost:9200/recause/_close?pretty' && sleep 2
 curl -XPUT 'http://localhost:9200/recause/_settings?pretty' -d '
 {
   "analysis":{
@@ -67,8 +67,8 @@ curl -XPUT 'http://localhost:9200/recause/_settings?pretty' -d '
     }
   }
 }
-'
-curl -XPOST 'http://localhost:9200/recause/_open?pretty'
+' && sleep 2
+curl -XPOST 'http://localhost:9200/recause/_open?pretty' && sleep 2
 curl -XPUT 'http://localhost:9200/recause/message/_mapping?pretty' -d '
 {
   "message": {
