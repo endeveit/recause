@@ -1,0 +1,33 @@
+#!/bin/sh
+set -e
+
+case "$1" in
+  configure)
+    mkdir -p /var/run/recause
+    mkdir -p /var/lib/recause
+
+    getent passwd recause >/dev/null 2>&1 || adduser --system --disabled-login --no-create-home --home /var/run/recause --gecos "Log management server" --group recause
+    chown -R recause /var/lib/recause /var/run/recause
+
+
+    if [ -x /bin/systemctl ]; then
+      systemctl enable recause.service >/dev/null 2>&1 || true
+    fi
+    ;;
+
+  abort-upgrade|abort-remove|abort-deconfigure)
+    ;;
+
+  *)
+    echo "postinst called with unknown argument \`$1'" >&2
+    exit 1
+    ;;
+esac
+
+if [ -x "/etc/init.d/recause" ] || [ -e "/etc/recause/config.cfg" ]; then
+  if [ ! -e "/etc/init/recause.conf" ]; then
+    update-rc.d recause defaults
+  fi
+fi
+
+exit 0

@@ -1,0 +1,37 @@
+#!/bin/sh
+set -e
+
+if [ -x /bin/systemctl ]; then
+  systemctl daemon-reload >/dev/null 2>&1 || true
+fi
+
+case "$1" in
+  upgrade)
+    if [ -x /bin/systemctl ]; then
+      systemctl restart recause.service
+    fi
+    ;;
+
+  remove|purge)
+    deluser recause
+    update-rc.d recause remove >/dev/null
+
+    if [ -d /var/run/recause ] ; then
+      rm -rf /var/run/recause
+    fi
+    ;;
+
+  failed-upgrade|abort-install|abort-upgrade|disappear)
+    ;;
+
+  *)
+    echo "postrm called with unknown argument \`$1'" >&2
+    exit 1
+    ;;
+esac
+
+if [ -d /run/systemd/system ] ; then
+  systemctl --system daemon-reload >/dev/null || true
+fi
+
+exit 0
