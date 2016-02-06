@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/braintree/manners"
 	"github.com/endeveit/go-snippets/cli"
@@ -76,6 +77,8 @@ func (wh *WorkerHttp) Run(wg *sync.WaitGroup, die chan bool) {
 				return
 			default:
 			}
+
+			time.Sleep(time.Second)
 		}
 	}(server)
 
