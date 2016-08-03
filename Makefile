@@ -12,9 +12,6 @@ DIR_OUT_LINUX=$(DIR_OUT)/linux
 DIR_DEBIAN_TMP=$(DIR_OUT)/deb
 DIR_RESOURCES=$(DIR_BUILD)/resources
 
-# Remove the "v" prefix from version
-VERSION=`$(DIR_OUT_LINUX)/$(APP_NAME) -v | cut -d ' ' -f 3 | tr -d 'v'`
-
 EXTERNAL_TOOLS=\
 	github.com/kisielk/errcheck \
 	github.com/Masterminds/glide
@@ -40,39 +37,51 @@ EXTERNAL_TOOLS=\
 		fi \
 	done
 
-.build-linux:
-	@echo Build Linux amd64
-	@env GOOS=linux GOARCH=amd64 go build -o $(DIR_OUT_LINUX)/$(APP_NAME) $(GO_LINKER_FLAGS) $(MAIN_GO)
+# Default make target
+build-all: build-linux-amd64 build-linux-arm build-osx
 
-.build-osx:
+build-linux-amd64:
+	@echo Build Linux amd64
+	@env GOOS=linux GOARCH=amd64 go build -o $(DIR_OUT_LINUX)/amd64/$(APP_NAME) $(GO_LINKER_FLAGS) $(MAIN_GO)
+
+build-linux-arm:
+	@echo Build Linux armhf
+	@env GOOS=linux GOARCH=arm go build -o $(DIR_OUT_LINUX)/armhf/$(APP_NAME) $(GO_LINKER_FLAGS) $(MAIN_GO)
+
+build-osx:
 	@echo Build OSX amd64
 	@env GOOS=darwin GOARCH=amd64 go build -o $(DIR_OUT)/darwin/$(APP_NAME) $(GO_LINKER_FLAGS) $(MAIN_GO)
-
-# Default make target
-build: check .build-linux .build-osx
 
 # Launch all checks
 check: .vet .errcheck
 
 # Build deb-package with Effing Package Management (https://github.com/jordansissel/fpm)
-deb: check .build-linux
-	@echo Build debian package
-	@mkdir $(DIR_DEBIAN_TMP)
+deb: build-linux-amd64 build-linux-arm
+	@echo Build debian packages
+	@rm -f $(DIR_OUT)/*.deb
+	@mkdir -p $(DIR_DEBIAN_TMP)
 	@mkdir -p $(DIR_DEBIAN_TMP)/etc/$(APP_NAME)
 	@mkdir -p $(DIR_DEBIAN_TMP)/usr/local/bin
 	@install -m 644 $(DIR_RESOURCES)/sample.cfg $(DIR_DEBIAN_TMP)/etc/$(APP_NAME)/config.cfg
-	@install -m 755 $(DIR_OUT_LINUX)/$(APP_NAME) $(DIR_DEBIAN_TMP)/usr/local/bin
-	fpm -n $(APP_NAME) \
-		-v $(VERSION) \
-		-t deb \
-		-s dir \
-		-C $(DIR_DEBIAN_TMP) \
-		-p $(DIR_OUT) \
-		--config-files   /etc/$(APP_NAME) \
-		--after-install  $(CURDIR)/build/debian/postinst \
-		--after-remove   $(CURDIR)/build/debian/postrm \
-		--deb-init       $(CURDIR)/build/debian/$(APP_NAME) \
-		.
+	$(eval ARCH = $(shell go env GOARCH))
+	$(eval VERSION=`$(DIR_OUT_LINUX)/$(shell go env GOARCH)/$(APP_NAME) -v | cut -d ' ' -f 3 | tr -d 'v'`)
+
+	@for arch in "amd64" "armhf" ; do \
+		install -m 755 $(DIR_OUT_LINUX)/$$arch/$(APP_NAME) $(DIR_DEBIAN_TMP)/usr/local/bin; \
+		fpm -s dir \
+			-C $(DIR_DEBIAN_TMP) \
+			-p $(DIR_OUT) \
+			--after-install $(DIR_BUILD)/debian/postinst \
+			--after-remove $(DIR_BUILD)/debian/postrm \
+			--deb-init $(DIR_BUILD)/debian/$(APP_NAME) \
+			-a $$arch \
+			-t deb \
+			-n $(APP_NAME) \
+			-v $(VERSION) \
+			--log error \
+			.; \
+	done
+
 	@rm -rf $(DIR_DEBIAN_TMP)
 
 # Format the source code
@@ -85,11 +94,11 @@ run:
 
 # Bootstrap vendoring tool and dependencies
 bootstrap:
-	@for tool in  $(EXTERNAL_TOOLS) ; do \
+	@for tool in $(EXTERNAL_TOOLS) ; do \
 		echo "Installing $$tool" ; \
 		go get -u $$tool; \
 	done
-	#@echo "Installing dependencies"; glide install
+	@echo "Installing dependencies"; glide install
 
 # Launch tests
 test:

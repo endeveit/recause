@@ -15,14 +15,14 @@ DAEMON=/usr/local/bin/recause
 RUNDIR=/var/run/recause
 PIDFILE=$RUNDIR/recause.pid
 CONFIGFILE=/etc/recause/config.cfg
-ARGS="-c=$CONFIGFILE -pid=$PIDFILE"
+ARGS="-c=$CONFIGFILE"
 NAME="recause"
 
 test -x $DAEMON || exit 0
 
 case "$1" in
     start)
-        if start-stop-daemon -b --start --quiet --pidfile $PIDFILE --chuid recause:recause --exec $DAEMON -- $ARGS
+        if start-stop-daemon --start -b -q -m -p $PIDFILE -c recause:recause -x $DAEMON -- $ARGS
         then
             echo "$NAME started."
         else
@@ -30,9 +30,10 @@ case "$1" in
         fi
         ;;
     stop)
-        if start-stop-daemon --stop --signal INT --quiet --oknodo --pidfile $PIDFILE --exec $DAEMON
+        if start-stop-daemon --stop -q -R INT/10/KILL/15 -o -p $PIDFILE
         then
             echo "$NAME stopped."
+            rm -f $PIDFILE
         else
             echo "$NAME stop failed"
         fi

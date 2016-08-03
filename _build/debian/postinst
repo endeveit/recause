@@ -6,9 +6,8 @@ case "$1" in
     mkdir -p /var/run/recause
     mkdir -p /var/lib/recause
 
-    getent passwd recause >/dev/null 2>&1 || adduser --system --disabled-login --no-create-home --home /var/run/recause --gecos "Log management server" --group recause
-    chown -R recause /var/lib/recause /var/run/recause
-
+    getent passwd recause >/dev/null 2>&1 || adduser --system --disabled-login --no-create-home --gecos "Log management server" --group recause
+    chown -R recause:recause /var/lib/recause /var/run/recause
 
     if [ -x /bin/systemctl ]; then
       systemctl enable recause.service >/dev/null 2>&1 || true
