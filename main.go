@@ -1,18 +1,19 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"os/signal"
 	"sync"
 
-	cc "github.com/codegangsta/cli"
 	hc "github.com/endeveit/go-snippets/cli"
 	"github.com/endeveit/go-snippets/config"
+	cc "github.com/urfave/cli"
 
-	"./recause/logger"
-	"./recause/storage"
-	"./recause/storage/elastic"
-	"./recause/workers"
+	"recause/logger"
+	"recause/storage"
+	"recause/storage/elastic"
+	"recause/workers"
 )
 
 func main() {
@@ -24,10 +25,9 @@ func main() {
 	app.Authors = []cc.Author{
 		{
 			Name:  "Nikita Vershinin",
-			Email: "endeveit@gmail.com"},
+			Email: "endeveit@gmail.com",
+		},
 	}
-	app.Email = "endeveit@gmail.com"
-	app.Action = actionRun
 	app.Flags = []cc.Flag{
 		cc.StringFlag{
 			Name:  "config, c",
@@ -41,7 +41,12 @@ func main() {
 		},
 	}
 
-	app.Run(os.Args)
+	app.Action = actionRun
+
+	err := app.Run(os.Args)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Unhandled error occurred while running application: %v\n", err)
+	}
 }
 
 func actionRun(c *cc.Context) {

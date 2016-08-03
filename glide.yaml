@@ -1,0 +1,30 @@
+package: recause
+import:
+- package: github.com/Sirupsen/logrus
+  version: ^0.10.0
+  subpackages:
+  - hooks/syslog
+- package: github.com/blevesearch/bleve
+  version: ^0.3.0
+  subpackages:
+  - analysis/analyzers/keyword_analyzer
+  - analysis/analyzers/standard_analyzer
+- package: github.com/braintree/manners
+  version: ^0.4.0
+- package: github.com/endeveit/go-gelf
+  subpackages:
+  - gelf
+- package: github.com/endeveit/go-snippets
+  subpackages:
+  - cli
+  - config
+- package: github.com/gorilla/mux
+  version: ^1.1.0
+- package: github.com/satori/go.uuid
+  version: ^1.1.0
+- package: gopkg.in/olivere/elastic.v3
+  version: ^3.0.45
+  subpackages:
+  - uritemplates
+- package: github.com/urfave/cli
+  version: ^1.18.0

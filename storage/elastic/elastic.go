@@ -14,8 +14,8 @@ import (
 	es "gopkg.in/olivere/elastic.v3"
 	"gopkg.in/olivere/elastic.v3/uritemplates"
 
-	"../"
-	"../../logger"
+	"recause/logger"
+	"recause/storage"
 )
 
 type Elastic struct {
@@ -135,7 +135,10 @@ func (e *Elastic) GetMessage(msgId string) (doc map[string]interface{}, err erro
 		return nil, err
 	}
 
-	json.Unmarshal(*response.Source, &doc)
+	err = json.Unmarshal(*response.Source, &doc)
+	if err != nil {
+		return nil, err
+	}
 
 	return doc, nil
 }

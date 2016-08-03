@@ -16,8 +16,8 @@ import (
 	"github.com/endeveit/go-snippets/config"
 	"github.com/satori/go.uuid"
 
-	"../"
-	"../../logger"
+	"recause/logger"
+	"recause/storage"
 )
 
 // Structure that used to encapsulate all work with bleve in a single object
@@ -208,7 +208,14 @@ func (b *Bleve) periodicCleanup(die chan bool) {
 		sleepDuration time.Duration = 3 * time.Second
 	)
 
-	defer b.index.Close()
+	defer func() {
+		err = b.index.Close()
+		if err != nil {
+			logger.Instance().
+				WithError(err).
+				Warning("Unable to close Bleve index")
+		}
+	}()
 
 	for {
 		select {

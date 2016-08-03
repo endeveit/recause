@@ -1,8 +1,9 @@
 package storage
 
 import (
-	"github.com/endeveit/go-gelf/gelf"
 	"time"
+
+	"github.com/endeveit/go-gelf/gelf"
 )
 
 type SearchQuery struct {

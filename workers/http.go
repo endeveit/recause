@@ -14,8 +14,8 @@ import (
 	"github.com/endeveit/go-snippets/config"
 	"github.com/gorilla/mux"
 
-	"../logger"
-	"../storage"
+	"recause/logger"
+	"recause/storage"
 )
 
 type WorkerHttp struct {
@@ -62,9 +62,10 @@ func NewWorkerHttp(storage storage.Storage) *WorkerHttp {
 func (wh *WorkerHttp) Run(wg *sync.WaitGroup, die chan bool) {
 	defer wg.Done()
 
-	server := manners.NewServer()
-	server.Addr = wh.addr
-	server.Handler = wh.getRouter()
+	server := manners.NewWithServer(&http.Server{
+		Addr:    wh.addr,
+		Handler: wh.getRouter(),
+	})
 
 	// Start goroutine which will gracefully close server
 	go func(server *manners.GracefulServer) {
@@ -230,9 +231,14 @@ func statusOk(w http.ResponseWriter, data interface{}) {
 		logger.Instance().
 			WithError(err).
 			WithField("status", "ok").
-			Warning("Unable marshal response")
+			Warning("Unable to marshal response")
 	} else {
-		w.Write(b)
+		_, err = w.Write(b)
+		if err != nil {
+			logger.Instance().
+				WithError(err).
+				Warning("Unable to write response")
+		}
 	}
 }
 

@@ -1,5 +1,4 @@
 *.iml
-.go/
 .idea/
-.vagrant/
-/out/*
+_build/out/*
+vendor/
