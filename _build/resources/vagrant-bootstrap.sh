@@ -132,6 +132,9 @@ curl -XPUT 'http://localhost:9200/recause/message/_mapping?pretty' -d '
         "type": "integer",
         "store": true,
         "index": "not_analyzed"
+      },
+      "extra": {
+        "type": "nested"
       }
     }
   }

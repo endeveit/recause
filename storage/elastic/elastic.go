@@ -149,7 +149,7 @@ func (e *Elastic) GetMessages(q *storage.SearchQuery) (result *storage.SearchRes
 		filters []es.Query    = []es.Query{}
 		query   *es.BoolQuery = es.NewBoolQuery()
 		tsRange *es.RangeQuery
-		msg     storage.Message
+		msg     *storage.Message
 	)
 
 	if len(q.Query) > 0 {
@@ -197,14 +197,16 @@ func (e *Elastic) GetMessages(q *storage.SearchQuery) (result *storage.SearchRes
 	// rs.Each() is not used because we need to add message id manually
 	if rs.Hits != nil && rs.Hits.Hits != nil && len(rs.Hits.Hits) > 0 {
 		for _, hit := range rs.Hits.Hits {
-			err = json.Unmarshal(*hit.Source, &msg)
+			msg = new(storage.Message)
+			err = json.Unmarshal(*hit.Source, msg)
+
 			if err != nil {
 				continue
 			}
 
 			msg.Id = hit.Id
 
-			result.Messages = append(result.Messages, msg)
+			result.Messages = append(result.Messages, *msg)
 		}
 	}
 
@@ -245,7 +247,6 @@ func (e *Elastic) PeriodicFlush(die chan bool) {
 
 			for _, message := range e.messages {
 				esBulk.Add(es.NewBulkIndexRequest().
-					OpType("create").
 					Index(e.indexName).
 					Type(e.typeName).
 					Id(uuid.NewV4().String()).
@@ -261,7 +262,7 @@ func (e *Elastic) PeriodicFlush(die chan bool) {
 						WithError(err).
 						Warning("Unable to batch index messages")
 				} else {
-					nbCreated := len(esResponse.Created())
+					nbCreated := len(esResponse.Indexed())
 					if nbCreated != nbMessages {
 						logger.Instance().
 							WithField("nb_messages", nbMessages).
