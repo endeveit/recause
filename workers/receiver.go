@@ -9,8 +9,8 @@ import (
 	"github.com/endeveit/go-snippets/cli"
 	"github.com/endeveit/go-snippets/config"
 
-	"recause/logger"
-	"recause/storage"
+	"github.com/endeveit/recause/logger"
+	"github.com/endeveit/recause/storage"
 )
 
 type WorkerReceiver struct {

@@ -14,8 +14,8 @@ import (
 	"github.com/endeveit/go-snippets/config"
 	"github.com/gorilla/mux"
 
-	"recause/logger"
-	"recause/storage"
+	"github.com/endeveit/recause/logger"
+	"github.com/endeveit/recause/storage"
 )
 
 type WorkerHttp struct {

@@ -1,12 +1,14 @@
-hash: 4592d3ca5d9fdf06af3dcb0c0970c9b0102d73520bcbb18c2232b7c8e1f69846
-updated: 2016-08-03T12:25:47.167304111+02:00
+hash: e07af17da16eb2cfb9750e92a6e3a2e8b57e8365c77885e0ca882965896c3221
+updated: 2017-02-18T16:55:10.547808457+01:00
 imports:
 - name: github.com/blevesearch/bleve
-  version: 9f31ea6805b221152f05a342c725ba531db2eaec
+  version: 97393d027342f43b17da2f02c090a4e728ac929f
   subpackages:
   - analysis
   - analysis/analyzers/keyword_analyzer
   - analysis/analyzers/standard_analyzer
+  - analysis/datetime_parsers/datetime_optional
+  - analysis/datetime_parsers/flexible_go
   - analysis/language/en
   - analysis/token_filters/lower_case_filter
   - analysis/token_filters/porter
@@ -16,16 +18,30 @@ imports:
   - document
   - index
   - index/store
+  - index/store/boltdb
+  - index/store/gtreap
+  - index/upside_down
   - numeric_util
   - registry
   - search
+  - search/collectors
+  - search/facets
   - search/highlight
+  - search/highlight/fragment_formatters/html
+  - search/highlight/fragmenters/simple
+  - search/highlight/highlighters/html
+  - search/highlight/highlighters/simple
+  - search/scorers
+  - search/searchers
 - name: github.com/blevesearch/go-porterstemmer
   version: 23a2c8e5cf1f380f27722c6d2ae8896431dc7d0e
   repo: https://github.com/blevesearch/go-porterstemmer
 - name: github.com/blevesearch/segment
   version: db70c57796cc8c310613541dfade3dce627d09c7
   repo: https://github.com/blevesearch/segment
+- name: github.com/boltdb/bolt
+  version: 144418e1475d8bf7abbdc48583500f1a20c62ea7
+  repo: https://github.com/boltdb/bolt
 - name: github.com/braintree/manners
   version: 0b5e6b2c2843f4c83c2a40f96980b09cf4af733c
 - name: github.com/endeveit/go-gelf
@@ -33,35 +49,44 @@ imports:
   subpackages:
   - gelf
 - name: github.com/endeveit/go-snippets
-  version: 49b882d912467857727655d333c42bf33da019e1
+  version: db8ffafd098d92f3e4a693baaedd6b5da18e1da6
   subpackages:
   - cli
   - config
+- name: github.com/golang/protobuf
+  version: 655cdfa588ea190e901bc5590e65d5621688847c
+  repo: https://github.com/golang/protobuf
+  subpackages:
+  - proto
 - name: github.com/gorilla/context
-  version: aed02d124ae4a0e94fea4541c8effd05bf0c8296
+  version: 08b5f424b9271eedf6f9f0ce86cb9396ed337a42
 - name: github.com/gorilla/mux
-  version: 0eeaf8392f5b04950925b8a69fe70f110fa7cbfc
+  version: 392c28fe23e1c45ddba891b0320b3b5df220beea
 - name: github.com/robfig/config
   version: 0f78529c8c7e3e9a25f15876532ecbc07c7d99e6
 - name: github.com/satori/go.uuid
   version: 879c5887cd475cd7864858769793b2ceb0d44feb
 - name: github.com/Sirupsen/logrus
-  version: 4b6ea7319e214d98c938f12692336f7ca9348d6b
+  version: c078b1e43f58d563c74cebe63c85789e76ddb627
   subpackages:
   - hooks/syslog
+- name: github.com/steveyen/gtreap
+  version: 0abe01ef9be25c4aedc174758ec2d917314d6d70
+  repo: https://github.com/steveyen/gtreap
 - name: github.com/urfave/cli
-  version: 1efa31f08b9333f1bd4882d61f9d668a70cd902e
+  version: 0bdeddeeb0f650497d603c4ad7b20cfe685682f6
 - name: golang.org/x/net
   version: e45385e9b226f570b1f086bf287b25d3d4117776
-  repo: https://go.googlesource.com/net
   subpackages:
   - context
+  - context/ctxhttp
 - name: golang.org/x/sys
-  version: a646d33e2ee3172a661fc09bca23bb4889a41bc8
+  version: 075e574b89e4c2d22f2286a7e2b919519c6f3547
   subpackages:
   - unix
-- name: gopkg.in/olivere/elastic.v3
-  version: 787ebbb5a7600662bca364e4e8ca959f315e442f
+- name: gopkg.in/olivere/elastic.v5
+  version: 4f7c9774c6041d96b9c522cfcbb657a5a49dbbb2
+  repo: git@github.com:olivere/elastic.git
   subpackages:
   - uritemplates
 testImports: []

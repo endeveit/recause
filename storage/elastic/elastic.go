@@ -11,11 +11,12 @@ import (
 	"github.com/endeveit/go-gelf/gelf"
 	"github.com/endeveit/go-snippets/config"
 	"github.com/satori/go.uuid"
-	es "gopkg.in/olivere/elastic.v3"
-	"gopkg.in/olivere/elastic.v3/uritemplates"
+	"golang.org/x/net/context"
+	es "gopkg.in/olivere/elastic.v5"
+	"gopkg.in/olivere/elastic.v5/uritemplates"
 
-	"recause/logger"
-	"recause/storage"
+	"github.com/endeveit/recause/logger"
+	"github.com/endeveit/recause/storage"
 )
 
 type Elastic struct {
@@ -129,7 +130,7 @@ func (e *Elastic) GetMessage(msgId string) (doc map[string]interface{}, err erro
 		Index(e.indexName).
 		Type(e.typeName).
 		Id(msgId).
-		Do()
+		Do(context.Background())
 
 	if err != nil {
 		return nil, err
@@ -180,7 +181,7 @@ func (e *Elastic) GetMessages(q *storage.SearchQuery) (result *storage.SearchRes
 		Sort("timestamp", false).
 		From(q.Offset).
 		Size(q.Limit).
-		Do()
+		Do(context.Background())
 
 	if err != nil {
 		return nil, err
@@ -250,12 +251,11 @@ func (e *Elastic) PeriodicFlush(die chan bool) {
 					Index(e.indexName).
 					Type(e.typeName).
 					Id(uuid.NewV4().String()).
-					Ttl(e.ttl).
 					Doc(message))
 			}
 
 			if esBulk.NumberOfActions() > 0 {
-				esResponse, err = esBulk.Do()
+				esResponse, err = esBulk.Do(context.Background())
 
 				if err != nil {
 					logger.Instance().
@@ -300,7 +300,7 @@ func (e *Elastic) ValidateQuery(query string) (err error) {
 	params := url.Values{}
 	params.Set("q", query)
 
-	rs, err := e.client.PerformRequest("GET", path, params, nil)
+	rs, err := e.client.PerformRequest(context.Background(), "GET", path, params, nil)
 	if err != nil {
 		return err
 	}

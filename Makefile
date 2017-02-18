@@ -1,9 +1,8 @@
 GO_LINKER_FLAGS=-ldflags="-s -w"
 
 APP_NAME=recause
-MAIN_GO=$(CURDIR)/main.go
+SRC_RECAUSE=github.com/endeveit/recause/cmd/recause
 GO_PROJECT_FILES=`go list -f '{{.Dir}}' ./... | grep -v /vendor/ | grep -v '$(APP_NAME)$$'`
-GO_PROJECT_FILES+=$(MAIN_GO)
 
 # Useful directories
 DIR_BUILD=$(CURDIR)/_build
@@ -42,15 +41,15 @@ build-all: build-linux-amd64 build-linux-arm build-osx
 
 build-linux-amd64:
 	@echo Build Linux amd64
-	@env GOOS=linux GOARCH=amd64 go build -o $(DIR_OUT_LINUX)/amd64/$(APP_NAME) $(GO_LINKER_FLAGS) $(MAIN_GO)
+	@env GOOS=linux GOARCH=amd64 go build -o $(DIR_OUT_LINUX)/amd64/$(APP_NAME) $(GO_LINKER_FLAGS) $(SRC_RECAUSE)
 
 build-linux-arm:
 	@echo Build Linux armhf
-	@env GOOS=linux GOARCH=arm go build -o $(DIR_OUT_LINUX)/armhf/$(APP_NAME) $(GO_LINKER_FLAGS) $(MAIN_GO)
+	@env GOOS=linux GOARCH=arm go build -o $(DIR_OUT_LINUX)/armhf/$(APP_NAME) $(GO_LINKER_FLAGS) $(SRC_RECAUSE)
 
 build-osx:
 	@echo Build OSX amd64
-	@env GOOS=darwin GOARCH=amd64 go build -o $(DIR_OUT)/darwin/$(APP_NAME) $(GO_LINKER_FLAGS) $(MAIN_GO)
+	@env GOOS=darwin GOARCH=amd64 go build -o $(DIR_OUT)/darwin/$(APP_NAME) $(GO_LINKER_FLAGS) $(SRC_RECAUSE)
 
 # Launch all checks
 check: .vet .errcheck
@@ -90,7 +89,7 @@ fmt:
 
 # Run the program from CLI without compilation for testing purposes
 run:
-	go run -v $(MAIN_GO) -c=$(DIR_RESOURCES)/sample.cfg -p=$(DIR_OUT)/recause.pid
+	go run -v $(SRC_RECAUSE) -c=$(DIR_RESOURCES)/sample.cfg -p=$(DIR_OUT)/recause.pid
 
 # Bootstrap vendoring tool and dependencies
 bootstrap:

@@ -16,8 +16,8 @@ import (
 	"github.com/endeveit/go-snippets/config"
 	"github.com/satori/go.uuid"
 
-	"recause/logger"
-	"recause/storage"
+	"github.com/endeveit/recause/logger"
+	"github.com/endeveit/recause/storage"
 )
 
 // Structure that used to encapsulate all work with bleve in a single object

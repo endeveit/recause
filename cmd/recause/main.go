@@ -9,10 +9,10 @@ import (
 	"github.com/endeveit/go-snippets/config"
 	cc "github.com/urfave/cli"
 
-	"recause/logger"
-	"recause/storage"
-	"recause/storage/elastic"
-	"recause/workers"
+	"github.com/endeveit/recause/logger"
+	"github.com/endeveit/recause/storage"
+	"github.com/endeveit/recause/storage/elastic"
+	"github.com/endeveit/recause/workers"
 )
 
 func main() {
@@ -20,7 +20,7 @@ func main() {
 
 	app.Name = "recause"
 	app.Usage = "Simple log management server that receives logs in GELF format"
-	app.Version = "0.0.4"
+	app.Version = "0.0.5"
 	app.Authors = []cc.Author{
 		{
 			Name:  "Nikita Vershinin",
